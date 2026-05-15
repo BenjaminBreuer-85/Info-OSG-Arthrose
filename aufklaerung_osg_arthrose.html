@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2C4F7C">
+<title>Information OSG-Arthrose | Fußzentrum</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(135deg, #FFF8F2 0%, #FEF3E7 100%);
+    color: #2D3748;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .stage {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Fortschritts-Indikator */
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0 16px 0;
+  }
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(44, 79, 124, 0.2);
+    transition: background 0.2s;
+  }
+  .progress-dot.active { background: #2C4F7C; }
+  .progress-dot.done { background: rgba(44, 79, 124, 0.5); }
+
+  /* Slide-Container */
+  .slide {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 2px 12px rgba(44, 79, 124, 0.06);
+    border: 1px solid rgba(44, 79, 124, 0.08);
+  }
+  .slide.active { display: flex; }
+
+  /* Titelseite */
+  .slide-cover {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #2C4F7C 0%, #008B8F 100%);
+    color: #fff;
+    border: none;
+  }
+  /* Titel-Bild auf Cover-Seite */
+  .cover-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: contain;
+    padding: 6px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .slide-cover h1 {
+    font-size: 22px;
+    margin: 16px 0 0 0;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    line-height: 1.4;
+  }
+  .slide-cover h1 .titel-haupt {
+    display: block;
+    font-size: 28px;
+    margin: 4px 0;
+    letter-spacing: -0.4px;
+  }
+  .slide-cover h1 .titel-zwischen {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.85;
+    margin: 12px 0 4px 0;
+  }
+  .slide-cover .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 32px;
+    margin-top: 16px;
+  }
+  .slide-cover .icon-large {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 8px;
+    opacity: 0.95;
+  }
+  .slide-cover .disclaimer-cover {
+    margin-top: auto;
+    padding-top: 24px;
+    font-size: 11px;
+    opacity: 0.75;
+    line-height: 1.5;
+  }
+
+  /* Inhalts-Seiten */
+  .slide-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px auto;
+    color: #2C4F7C;
+  }
+  .slide h2 {
+    font-size: 20px;
+    color: #2C4F7C;
+    margin: 0 0 16px 0;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+  .slide h3 {
+    font-size: 14px;
+    color: #2D3748;
+    margin: 16px 0 6px 0;
+    font-weight: 700;
+  }
+  .slide p {
+    font-size: 14px;
+    margin: 0 0 12px 0;
+    color: #4A5568;
+    line-height: 1.6;
+  }
+  .slide ul {
+    padding-left: 20px;
+    margin: 8px 0 12px 0;
+  }
+  .slide li {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #4A5568;
+    line-height: 1.55;
+  }
+  .info-box {
+    background: rgba(44, 79, 124, 0.06);
+    border-left: 3px solid #2C4F7C;
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #2D3748;
+    line-height: 1.5;
+  }
+  .warn-box {
+    background: rgba(229, 81, 0, 0.08);
+    border-left: 3px solid #E65100;
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #2D3748;
+    line-height: 1.5;
+  }
+
+  /* Video-Slot */
+  .video-slot {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    background: #1a1a1a;
+    border-radius: 8px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  .video-slot iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  /* Bildhalter (z.B. Röntgenbild) */
+  .image-slot {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #f4f4f4;
+    border: 2px dashed rgba(44, 79, 124, 0.25);
+    border-radius: 8px;
+    margin: 12px 0 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 12px;
+    text-align: center;
+    padding: 16px;
+    line-height: 1.5;
+  }
+  .image-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .image-caption {
+    font-size: 11px;
+    color: #718096;
+    text-align: center;
+    margin: 0 0 16px 0;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* Quellen-Footer am Seitenende */
+  .source-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 9px;
+    color: #A0AEC0;
+    line-height: 1.4;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Risiko-Liste mit Häufigkeits-Badge */
+  .risk-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 12px 0;
+  }
+  .risk-list li {
+    background: #fff;
+    border: 1px solid rgba(44, 79, 124, 0.18);
+    border-left: 3px solid #2C4F7C;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #2D3748;
+  }
+  .risk-list .risk-badge {
+    display: block;
+    color: #2C4F7C;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    letter-spacing: 0.2px;
+  }
+  .risk-list .risk-text {
+    display: block;
+    color: #2D3748;
+  }
+  .risk-list-qual {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 8px 0 12px 0;
+  }
+  .risk-list-qual li {
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #4A5568;
+    line-height: 1.5;
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    transition: transform 0.05s, opacity 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  button:active { transform: scale(0.98); }
+  .btn-primary {
+    background: #2C4F7C;
+    color: #fff;
+    flex: 1;
+  }
+  .btn-primary:hover { background: #00595D; }
+  .btn-secondary {
+    background: #F0F0F0;
+    color: #4A5568;
+    flex: 0 0 auto;
+    padding: 12px 16px;
+  }
+  .btn-secondary:hover { background: #E5E5E5; }
+  .btn-large {
+    padding: 16px 24px;
+    font-size: 16px;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  /* Bestätigung */
+  .confirm-status {
+    display: none;
+    text-align: center;
+    padding: 16px 0;
+    color: #00897B;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .confirm-status.show { display: block; }
+
+  /* Druckdokument */
+  .print-doc {
+    display: none;
+    background: #fff;
+    padding: 24px;
+    border: 2px dashed rgba(44, 79, 124, 0.25);
+    border-radius: 8px;
+    margin-top: 16px;
+    color: #2D3748;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .print-doc.show { display: block; }
+  .print-doc-header {
+    text-align: center;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #2C4F7C;
+  }
+  .print-doc-header .placeholder {
+    background: rgba(255, 235, 59, 0.25);
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #6B5500;
+    font-size: 11px;
+    font-style: italic;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .print-doc h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #2C4F7C;
+    text-align: center;
+  }
+  .print-doc .field-row {
+    margin: 12px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .print-doc .field {
+    flex: 1;
+    min-width: 180px;
+  }
+  .print-doc .field-label {
+    font-size: 11px;
+    color: #718096;
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .print-doc .field-line {
+    border-bottom: 1px solid #2D3748;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+  .print-doc .filled {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    color: #2D3748;
+    padding: 4px 0;
+  }
+  .print-doc .signature-block {
+    margin-top: 28px;
+    page-break-inside: avoid;
+  }
+  .print-doc .timestamp {
+    text-align: center;
+    font-size: 12px;
+    color: #4A5568;
+    margin: 16px 0;
+    padding: 8px;
+    background: rgba(44, 79, 124, 0.04);
+    border-radius: 6px;
+  }
+  .print-doc .disclaimer-print {
+    font-size: 10px;
+    color: #718096;
+    line-height: 1.5;
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-style: italic;
+  }
+
+  /* Print-Style: nur das Druckdokument zeigen */
+  @media print {
+    body {
+      background: #fff;
+      font-size: 10pt;
+      line-height: 1.4;
+    }
+    .stage > *:not(.slide-confirm) { display: none !important; }
+    .slide-confirm > *:not(.print-doc) { display: none !important; }
+    .slide-confirm {
+      display: flex !important;
+      box-shadow: none;
+      border: none;
+      padding: 0;
+    }
+    .print-doc {
+      display: block !important;
+      border: none;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.4;
+      page-break-inside: avoid;
+    }
+    .print-doc h3 {
+      color: #000 !important;
+      font-size: 13pt;
+      margin: 0 0 4pt 0;
+    }
+    .print-doc-header {
+      border-bottom-color: #000 !important;
+      padding-bottom: 6pt;
+      margin-bottom: 8pt;
+    }
+    .print-doc-header .placeholder {
+      background: #f0f0f0 !important;
+      color: #555 !important;
+      font-size: 8pt !important;
+      padding: 2pt 6pt !important;
+    }
+    .field-line { border-bottom-color: #000 !important; height: 18pt !important; }
+    .print-doc .field-row { margin: 6pt 0 !important; }
+    .print-doc .field-label { font-size: 8pt !important; margin-bottom: 1pt !important; }
+    .print-doc .filled { font-size: 10pt !important; padding: 2pt 0 !important; }
+    .print-doc .timestamp {
+      margin: 8pt 0 !important;
+      padding: 4pt !important;
+      background: #f5f5f5 !important;
+      font-size: 9pt !important;
+    }
+    .print-doc p { margin: 6pt 0 !important; font-size: 9.5pt !important; }
+    .print-doc .signature-block { margin-top: 12pt !important; }
+    .print-doc .signature-block .field-row[style] { margin-top: 14pt !important; }
+    .print-doc .disclaimer-print {
+      font-size: 7.5pt !important;
+      margin-top: 10pt !important;
+      padding-top: 6pt !important;
+    }
+    .print-doc .source-footer-print {
+      font-size: 7pt !important;
+      margin-top: 6pt !important;
+      color: #666 !important;
+      text-align: center !important;
+      font-style: italic !important;
+    }
+    @page {
+      size: A4;
+      margin: 1.8cm 2cm;
+    }
+  }
+  /* Source-Footer im Druckdokument (nur sichtbar im Druck) */
+  .print-doc .source-footer-print {
+    display: none;
+  }
+  @media print {
+    .print-doc .source-footer-print {
+      display: block !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- Fortschrittsanzeige (7 Slides: Cover + 5 Inhalt + Abschluss) -->
+  <div class="progress" id="progress" aria-hidden="true">
+    <div class="progress-dot active"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+
+  <!-- Seite 0: Titel -->
+  <section class="slide slide-cover active" data-step="0">
+    <!-- Cover-Bild: Platzhalter, kommt später -->
+    <div style="width:100%; max-width:400px; margin:20px auto; aspect-ratio:4/3; background:linear-gradient(135deg, rgba(44,79,124,0.15), rgba(44,79,124,0.05)); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:13px; font-weight:600; text-align:center; padding:20px;">
+      Titelbild folgt
+    </div>
+    <h1>
+      <span class="titel-zwischen">Informationen zur</span>
+      <span class="titel-haupt">fortgeschrittenen OSG-Arthrose</span>
+      <span class="titel-zwischen">und den Behandlungsoptionen</span>
+    </h1>
+
+    <!-- Autoren-Box mit vollem Titel (nur Cover) -->
+    <div style="max-width:480px; margin:24px auto 16px; padding:18px 20px; background:white; border-left:3px solid #2C4F7C; border-radius:6px; box-shadow:0 2px 12px rgba(0,0,0,0.10); text-align:left;">
+      <div style="font-size:11px; font-weight:600; color:#2C4F7C; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Inhalt und Bewertung</div>
+      <!-- Foto-Platzhalter (optional) -->
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="flex:0 0 56px; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg, rgba(44,79,124,0.18), rgba(44,79,124,0.06)); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:9px; font-weight:600; text-align:center;">
+          Foto<br>folgt
+        </div>
+        <div style="flex:1; font-size:13px; line-height:1.5; color:#1A202C;">
+          <div style="font-weight:700; color:#2C4F7C; font-size:14px;">Dr. med. Benjamin Breuer D.O. DAAO</div>
+          <div style="margin-top:2px;">Facharzt für Orthopädie und Unfallchirurgie</div>
+          <div>Spezielle Orthopädische Chirurgie</div>
+          <div>Spezialist für Fuß- und Sprunggelenkchirurgie</div>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.10); color:#2D3748; font-size:12.5px;">
+            Leitender Arzt Sektion Spezielle Fuß- und Sprunggelenkchirurgie<br>
+            Florence Nightingale Krankenhaus, Düsseldorf Kaiserswerth<br>
+            Chefarzt und Ärztlicher Direktor: Prof. Dr. Sönke Frey
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary btn-large" onclick="goNext()">Information ansehen</button>
+    <div class="disclaimer-cover">
+      Diese Information ergänzt das ärztliche Aufklärungsgespräch und ersetzt es nicht. Das persönliche Gespräch mit Ihrer Operateurin/Ihrem Operateur ist Pflichtbestandteil jeder Operation.
+    </div>
+  </section>
+
+  <!-- Seite 1: Krankheitsbild -->
+  <section class="slide" data-step="1">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Schematische Darstellung des oberen Sprunggelenks: Tibia / Talus / Fibula -->
+      <path d="M 22 6 L 22 32 L 18 38"/>
+      <path d="M 42 6 L 42 30 L 46 36"/>
+      <path d="M 16 38 Q 32 32, 48 36 L 50 44 Q 32 50, 14 44 Z"/>
+      <path d="M 12 44 L 56 44"/>
+      <circle cx="32" cy="40" r="2" fill="currentColor"/>
+    </svg>
+    <h2>Was ist eine OSG-Arthrose?</h2>
+
+    <p>Das obere Sprunggelenk (kurz <strong>OSG</strong>) verbindet den Unterschenkel mit dem Fuß und ermöglicht die Auf- und Abwärtsbewegung des Fußes beim Gehen. Wie alle Gelenke besitzt es an den knöchernen Kontaktflächen eine glatte Knorpelschicht, die ein reibungsarmes Gleiten ermöglicht.</p>
+
+    <p>Bei einer <strong>OSG-Arthrose</strong> ist diese Knorpelschicht verschlissen. Die Knochenenden reiben direkt aufeinander, das Gelenk wird zunehmend steifer, und es entstehen Schmerzen — insbesondere unter Belastung.</p>
+
+    <h3>Wie entsteht eine OSG-Arthrose?</h3>
+    <p>Anders als bei Hüft- oder Kniearthrose entsteht die OSG-Arthrose nur in einer Minderheit der Fälle durch reinen Verschleiß. Die häufigsten Ursachen sind:</p>
+    <ul>
+      <li><strong>Frühere Verletzungen</strong> wie Sprunggelenksbrüche oder schwere Bandverletzungen (sogenannte posttraumatische Arthrose)</li>
+      <li><strong>Fehlstellungen</strong> der Beinachse oder des Fußes (z.B. ein O-Bein-Achsfehler im Knöchel)</li>
+      <li><strong>Chronische Instabilität</strong> nach wiederholten Umknickverletzungen</li>
+      <li><strong>Entzündliche Gelenkerkrankungen</strong> wie die rheumatoide Arthritis</li>
+    </ul>
+    <p>Die OSG-Arthrose tritt im Vergleich zu anderen Gelenken meist in einem jüngeren Lebensalter auf — häufig zwischen dem 40. und 60. Lebensjahr.</p>
+
+    <h3>Welche Beschwerden können auftreten?</h3>
+    <p>Typische Beschwerden sind:</p>
+    <ul>
+      <li><strong>Belastungsabhängige Schmerzen</strong> im Sprunggelenk, vor allem beim Gehen auf unebenem Boden oder Treppensteigen</li>
+      <li><strong>Anlaufschmerz</strong> nach Ruhephasen</li>
+      <li><strong>Zunehmende Steifigkeit</strong> und eingeschränkte Beweglichkeit</li>
+      <li><strong>Schwellung</strong> und gelegentliche Reizergüsse</li>
+      <li><strong>Gangbild-Veränderungen</strong> zur Schonung des Gelenks</li>
+    </ul>
+
+    <h3>Wann gilt eine OSG-Arthrose als „fortgeschritten"?</h3>
+    <p>Im fortgeschrittenen Stadium ist der Knorpel großflächig zerstört. Im Röntgenbild zeigen sich typische Veränderungen:</p>
+
+    <!-- 3 Röntgenbilder-Platzhalter nebeneinander -->
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:12px 0;">
+      <div style="aspect-ratio:3/4; background:linear-gradient(135deg, rgba(44,79,124,0.12), rgba(44,79,124,0.04)); border-radius:6px; border:1px solid rgba(44,79,124,0.18); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:10px; font-weight:600; text-align:center; padding:8px;">
+        Röntgen<br>OSG normal<br><span style="font-weight:400; font-size:9px; opacity:0.7">(Bild folgt)</span>
+      </div>
+      <div style="aspect-ratio:3/4; background:linear-gradient(135deg, rgba(44,79,124,0.12), rgba(44,79,124,0.04)); border-radius:6px; border:1px solid rgba(44,79,124,0.18); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:10px; font-weight:600; text-align:center; padding:8px;">
+        Röntgen<br>OSG verschlissen<br><span style="font-weight:400; font-size:9px; opacity:0.7">(Bild folgt)</span>
+      </div>
+      <div style="aspect-ratio:3/4; background:linear-gradient(135deg, rgba(44,79,124,0.12), rgba(44,79,124,0.04)); border-radius:6px; border:1px solid rgba(44,79,124,0.18); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:10px; font-weight:600; text-align:center; padding:8px;">
+        Röntgen<br>verschlissen<br>mit Achsfehler<br><span style="font-weight:400; font-size:9px; opacity:0.7">(Bild folgt)</span>
+      </div>
+    </div>
+    <div class="image-caption">Vergleich: gesundes OSG &mdash; fortgeschrittener Verschleiß &mdash; Verschleiß mit Achsfehlstellung.</div>
+
+    <p>Bei einer Achsfehlstellung wird die Belastung nicht mehr gleichmäßig auf die gesamte Gelenkfläche verteilt. Dies kann den Verschleiß deutlich beschleunigen und ist ein wichtiger Aspekt bei der Wahl der Behandlung.</p>
+
+    <div class="info-box">
+      Eine OSG-Arthrose entwickelt sich in der Regel langsam über Jahre und schreitet in unterschiedlicher Geschwindigkeit fort. Die Symptome sind durchaus beeinflussbar, der Verschleißprozess ist aber nicht umkehrbar. Welche Behandlung im individuellen Fall sinnvoll ist, hängt vom Stadium, vom Beschwerdebild, von der Fußstellung und von Ihren persönlichen Lebensumständen ab.
+    </div>
+
+    <p>Welche Behandlungsmöglichkeiten Sie haben, wird auf den nächsten Seiten dargestellt &mdash; zunächst die nicht-operativen Optionen, anschließend die zwei wichtigsten operativen Verfahren und deren Abwägung gegeneinander.</p>
+
+    <div class="nav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="goNext()">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Seite 2: Konservative Optionen -->
+  <!-- Seite 2: Konservative Behandlung (Platzhalter — Inhalt folgt) -->
+  <section class="slide" data-step="2">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="32" cy="32" r="22"/>
+      <path d="M 24 32 L 30 38 L 42 26"/>
+    </svg>
+    <h2>Konservative (nicht-operative) Behandlung</h2>
+
+    <p>Bevor eine Operation in Betracht gezogen wird, sollten in der Regel zunächst die nicht-operativen Möglichkeiten ausgeschöpft werden. Diese können die Beschwerden über Monate oder Jahre deutlich lindern und in vielen Fällen die Lebensqualität spürbar verbessern. Auch wenn eine OP-Indikation bereits besteht, kann eine konservative Therapie für Sie zunächst der richtige Weg sein &mdash; der Zeitpunkt einer Operation wird gemeinsam mit Ihnen festgelegt.</p>
+
+    <h3>🥿 Schuhe und orthopädische Versorgung</h3>
+    <ul>
+      <li><strong>Schuhwerk mit Pufferabsatz</strong> und einer <strong>versteiften Sohle</strong> entlastet das Sprunggelenk beim Abrollen</li>
+      <li><strong>Abrollhilfe</strong> in der Sohle (sogenannte „Rocker-Sohle") reduziert die Bewegung im OSG</li>
+      <li><strong>Individuell angepasste Einlagen</strong> zur Korrektur einer Fehlstellung und Stabilisierung</li>
+      <li><strong>Orthese / Sprunggelenksbandage</strong> bei akuten Beschwerden zur kurzfristigen Entlastung</li>
+    </ul>
+    <p>Eine Versorgung mit Einlagen und orthopädischen Schuhen verändert die Arthrose nicht &mdash; sie verteilt aber die Belastung anders und kann die Beschwerden spürbar lindern.</p>
+
+    <h3>🏃 Bewegung und Physiotherapie</h3>
+    <ul>
+      <li><strong>Erhaltung der Beweglichkeit</strong> durch gezielte Übungen</li>
+      <li><strong>Kräftigung</strong> der umliegenden Muskulatur zur Gelenkstabilisierung</li>
+      <li><strong>Gangschulung</strong> zur Schonung des Gelenks</li>
+      <li><strong>Belastungsmodifikation</strong> &mdash; Wechsel von hoch-impactartigen Sportarten (Joggen, Tennis) zu gelenkschonenden Aktivitäten (Radfahren, Schwimmen, Walking)</li>
+    </ul>
+
+    <h3>🍎 Lebensstil</h3>
+    <ul>
+      <li><strong>Gewichtsreduktion</strong> bei einem BMI über 30 reduziert die Belastung des Gelenks deutlich und ist oft die wirkungsvollste konservative Maßnahme</li>
+      <li><strong>Verzicht auf Nikotin</strong> verbessert die Durchblutung und unterstützt die Geweberegeneration; auch im Hinblick auf eine evtl. spätere Operation ist Nikotinverzicht wichtig für die Wundheilung</li>
+      <li><strong>Gesunde Mischkost</strong> &mdash; idealerweise regional und wenig verarbeitet</li>
+      <li><strong>Nahrungsergänzungsmittel</strong> wie Vitamin C, Glukosamin oder Chondroitin werden zur unterstützenden Behandlung diskutiert; eine eindeutige wissenschaftliche Evidenz für eine Veränderung des Krankheitsverlaufs gibt es nicht, viele Patientinnen und Patienten berichten jedoch subjektiv über eine Linderung der Beschwerden</li>
+    </ul>
+
+    <h3>💊 Schmerztherapie</h3>
+    <ul>
+      <li><strong>Entzündungshemmende Medikamente</strong> (z.B. Ibuprofen, Diclofenac) bei akuten Beschwerden</li>
+      <li><strong>Lokale Salben</strong> mit entzündungshemmenden Wirkstoffen</li>
+      <li>Die Anwendung sollte mit Ihrem Hausarzt abgestimmt werden, insbesondere bei längerer Einnahme</li>
+    </ul>
+
+    <h3>💉 Infiltrationen (Spritzentherapie)</h3>
+    <ul>
+      <li><strong>Kortison-Infiltrationen</strong> wirken stark entzündungshemmend und können bei akuten Reizzuständen schnelle Linderung bringen. Die Wirkung ist meist zeitlich begrenzt; die Anzahl der Infiltrationen sollte aufgrund möglicher Nebenwirkungen am Knorpel begrenzt bleiben.</li>
+      <li><strong>Hyaluronsäure-Infiltrationen</strong> sollen die Gleiteigenschaften des Gelenks verbessern. Die Studienlage zur Wirksamkeit ist gemischt; die Kosten werden häufig nicht von der gesetzlichen Krankenkasse übernommen.</li>
+      <li><strong>Eigenbluttherapie (PRP)</strong> wird als ergänzende Option diskutiert, die Studienlage ist hierzu noch nicht abschließend.</li>
+    </ul>
+
+    <div class="info-box" style="background:rgba(230,81,0,0.08); border-left:4px solid #E65100; margin-top:8px">
+      <strong>⚠️ Wichtiger Hinweis:</strong> Sollte eine operative Versorgung in Erwägung gezogen werden, sollten Infiltrationen ins Gelenk <strong>mindestens 3 Monate vor dem geplanten Eingriff</strong> nicht mehr durchgeführt werden. Sie können das Infektionsrisiko nach einer Operation erhöhen.
+    </div>
+
+    <h3>🩻 Radiosynoviorthese (RSO)</h3>
+    <p>Insbesondere bei <strong>rheumatischer oder entzündlicher Gelenkerkrankung</strong> ist die Radiosynoviorthese eine ergänzende Behandlungsoption. Dabei wird ein schwach radioaktives Präparat ins Gelenk injiziert, das die entzündete Gelenkinnenhaut gezielt behandelt. Die Durchführung erfolgt in einer nuklearmedizinischen Praxis. Auch hier gilt der oben genannte 3-Monats-Abstand vor einer geplanten Operation.</p>
+
+    <h3>⚡ Stoßwellentherapie</h3>
+    <p>Eine alternative Methode, die in bestimmten Fällen Linderung bringen kann. Wird typischerweise nicht von der gesetzlichen Krankenkasse erstattet.</p>
+
+    <div class="info-box">
+      Eine sinnvolle konservative Therapie kombiniert mehrere Bausteine und wird über mindestens drei bis sechs Monate konsequent durchgeführt. Erst wenn diese Maßnahmen keine ausreichende Beschwerdelinderung mehr ermöglichen und die Lebensqualität deutlich eingeschränkt ist, wird gemeinsam mit Ihnen eine operative Behandlung erwogen.
+    </div>
+
+    <div class="nav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="goNext()">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Seite 3: OSG-Versteifung (Platzhalter — Inhalt folgt) -->
+  <section class="slide" data-step="3">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="20" y="14" width="24" height="36" rx="3"/>
+      <path d="M 26 22 L 38 22"/>
+      <path d="M 26 30 L 38 30"/>
+      <path d="M 26 38 L 38 38"/>
+    </svg>
+    <h2>OSG-Versteifung (Arthrodese)</h2>
+
+    <h3>Was ist eine OSG-Versteifung?</h3>
+    <p>Bei der <strong>Versteifung des oberen Sprunggelenks</strong> wird das verschlissene Gelenk dauerhaft mit Schrauben oder Platten zwischen Schienbein und Sprungbein fixiert. Die beiden Knochen wachsen über Wochen miteinander zusammen und bilden eine knöcherne Einheit. Damit ist das Gelenk belastbar, aber nicht mehr beweglich.</p>
+    <p>Die OSG-Arthrodese gehört seit Jahrzehnten zu den <strong>Standardverfahren</strong> bei fortgeschrittener Arthrose und liefert in der überwiegenden Mehrheit der Fälle ein dauerhaft stabiles Ergebnis mit deutlicher Beschwerdebesserung.</p>
+
+    <h3>Für wen ist die Versteifung besonders geeignet?</h3>
+    <ul>
+      <li>Patientinnen und Patienten mit <strong>stark belastenden Lebens- oder Berufsumständen</strong> (körperlich schwere Arbeit, Sport)</li>
+      <li><strong>Junges Alter</strong> mit langer Lebenserwartung &mdash; die Versteifung ist dauerhaft, eine Prothese hätte eine begrenzte Standzeit</li>
+      <li><strong>Ausgeprägte Achsfehlstellungen</strong>, die korrigiert werden müssen</li>
+      <li><strong>Voroperationen</strong> am Sprunggelenk, fortgeschrittene Knochendefekte</li>
+      <li><strong>Infektionen</strong> in der Vorgeschichte oder schlechte Weichteilverhältnisse</li>
+      <li><strong>Reduzierte Knochenqualität</strong>, z.B. ausgeprägte Osteoporose</li>
+    </ul>
+
+    <h3>Wie läuft die Operation ab?</h3>
+    <!-- Vimeo-Video-Platzhalter -->
+    <div style="aspect-ratio:16/9; background:linear-gradient(135deg, rgba(44,79,124,0.12), rgba(44,79,124,0.04)); border-radius:8px; border:1px solid rgba(44,79,124,0.18); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:11px; font-weight:600; text-align:center; padding:16px; margin:12px 0;">
+      🎬 Video zur OSG-Versteifung<br>
+      <span style="font-weight:400; font-size:10px; opacity:0.7">(folgt)</span>
+    </div>
+    <p>Die OP erfolgt in Vollnarkose oder Spinalanästhesie. Über einen Hautschnitt am Sprunggelenk wird das Gelenk freigelegt. Die verbliebene Knorpel- und Knochenschicht wird so vorbereitet, dass die Knochen direkt aufeinander zu liegen kommen. In dieser Position werden Schienbein und Sprungbein mit Schrauben &mdash; in einigen Fällen zusätzlich mit Platten &mdash; fest miteinander verbunden. Die genaue Verfahrenswahl hängt von der individuellen Situation ab und wird vorab mit Ihnen besprochen.</p>
+    <p>Die Operation dauert in der Regel <strong>60&ndash;90 Minuten</strong>. Der Krankenhausaufenthalt umfasst <strong>mehrere Tage</strong>.</p>
+
+    <h3>Nachsorge und Heilungsverlauf</h3>
+    <ul>
+      <li><strong>Teilbelastung mit 15 kg</strong> über <strong>8 Wochen nach Abschwellung</strong> im Unterschenkel-Stiefel (Vacoped) oder Gips</li>
+      <li><strong>Schrittweise Aufbelastung</strong> im Anschluss</li>
+      <li><strong>Vollbelastung</strong> in der Regel ab dem 4. Monat</li>
+      <li><strong>Vollständige knöcherne Durchbauung</strong> nach 4&ndash;6 Monaten</li>
+      <li><strong>Physiotherapie</strong> zur Gangschulung und Kompensation des Beweglichkeitsverlusts</li>
+      <li><strong>Thromboseprophylaxe</strong> während der Entlastungsphase</li>
+    </ul>
+
+    <h3>Mögliche Risiken</h3>
+    <p>Jede Operation birgt Risiken. Bei der OSG-Versteifung sind insbesondere zu nennen:</p>
+    <ul>
+      <li><strong>Infektion</strong> (oberflächlich oder tiefe Gelenkinfektion)</li>
+      <li><strong>Wundheilungsstörungen</strong> &mdash; bei dünnen Weichteilen am Sprunggelenk relevant</li>
+      <li><strong>Thrombose / Lungenembolie</strong> während der Immobilisationsphase</li>
+      <li><strong>Nerven- und Gefäßverletzungen</strong> (selten)</li>
+      <li><strong>Verzögerte oder ausbleibende knöcherne Durchbauung (Pseudarthrose)</strong> &mdash; kann eine erneute Operation erforderlich machen</li>
+      <li><strong>Materialprobleme</strong> &mdash; Schrauben können stören oder müssen später entfernt werden</li>
+      <li><strong>Anschlussarthrose</strong> an den Nachbargelenken (Subtalargelenk, Chopart-Gelenk) im Langzeitverlauf &mdash; siehe Vergleichsseite</li>
+    </ul>
+
+    <h3>Was Sie nach der OP erwarten können</h3>
+    <p>Die meisten Patientinnen und Patienten erleben nach abgeschlossener Heilung eine Beschwerdebesserung. Das Sprunggelenk selbst ist nicht mehr beweglich. Das Gangbild ist häufig auf Grund der Schmerzreduktion gebessert, das Abrollverhalten aber naturgemäß reduziert. Die angrenzenden Fußgelenke, vor allem das untere Sprunggelenk, können die aufgehobene Beweglichkeit in unterschiedlichem Maße kompensieren. Zudem sind viele Patientinnen und Patienten bereits an eine Steife gewohnt, da die Beweglichkeit auch bei verschlissenen Gelenken häufig erheblich reduziert ist. Spaziergänge, Radfahren, Schwimmen und moderate Sportarten sind in vielen Fällen ohne wesentliche Einschränkung möglich. Joggen auf hartem Untergrund und impact-belastete Sportarten werden meist nicht empfohlen.</p>
+
+    <div class="info-box">
+      Wie sich die Versteifung im Vergleich zur Prothese unterscheidet und wie eine Entscheidung zwischen beiden Verfahren getroffen werden kann, wird auf der Vergleichsseite ausführlich dargestellt.
+    </div>
+
+    <div class="nav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="goNext()">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Seite 4: OSG-Prothese (Platzhalter — Inhalt folgt) -->
+  <section class="slide" data-step="4">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M 18 14 L 18 30 Q 18 34, 22 34 L 42 34 Q 46 34, 46 30 L 46 14"/>
+      <path d="M 16 34 L 48 34"/>
+      <path d="M 22 38 L 22 50"/>
+      <path d="M 42 38 L 42 50"/>
+    </svg>
+    <h2>OSG-Prothese (Endoprothese)</h2>
+
+    <h3>Was ist eine OSG-Prothese?</h3>
+    <p>Bei der <strong>Endoprothese des oberen Sprunggelenks</strong> werden die verschlissenen Gelenkflächen zwischen Schienbein und Sprungbein entfernt und durch metallische Komponenten mit dazwischenliegendem Polyethylen-Inlay ersetzt. Das Gelenk bleibt damit beweglich, der Knorpelverschleiß wird durch die künstlichen Oberflächen kompensiert.</p>
+    <p>Die OSG-Prothese hat sich in den letzten zwei Jahrzehnten als gleichwertige Alternative zur Versteifung etabliert &mdash; mit dem entscheidenden Unterschied, dass die <strong>Beweglichkeit des Sprunggelenks erhalten bleibt</strong>.</p>
+
+    <h3>Für wen ist die Prothese besonders geeignet?</h3>
+    <ul>
+      <li>Patientinnen und Patienten mit <strong>mäßiger körperlicher Belastung</strong> im Alltag</li>
+      <li><strong>Mittleres bis höheres Lebensalter</strong>, bei dem die begrenzte Standzeit der Prothese keine zu schnelle Revision erwarten lässt</li>
+      <li><strong>Achsgerechtes Sprunggelenk</strong> ohne ausgeprägte Fehlstellung</li>
+      <li><strong>Gute Knochenqualität</strong> und intakte Weichteile</li>
+      <li><strong>Bereits versteifte Nachbargelenke</strong> (z.B. nach Subtalararthrodese) &mdash; hier ist der Erhalt der OSG-Beweglichkeit besonders wichtig</li>
+      <li>Wunsch nach <strong>Erhalt eines möglichst natürlichen Gangbilds</strong></li>
+    </ul>
+
+    <h3>Wie läuft die Operation ab?</h3>
+    <!-- Vimeo-Video-Platzhalter -->
+    <div style="aspect-ratio:16/9; background:linear-gradient(135deg, rgba(44,79,124,0.12), rgba(44,79,124,0.04)); border-radius:8px; border:1px solid rgba(44,79,124,0.18); display:flex; align-items:center; justify-content:center; color:#2C4F7C; font-size:11px; font-weight:600; text-align:center; padding:16px; margin:12px 0;">
+      🎬 Video zur OSG-Prothese<br>
+      <span style="font-weight:400; font-size:10px; opacity:0.7">(folgt)</span>
+    </div>
+    <p>Die OP erfolgt in Vollnarkose oder Spinalanästhesie. Über einen Hautschnitt an der Vorderseite des Sprunggelenks wird das Gelenk freigelegt. Die verschlissenen Knorpel- und Knochenflächen werden präzise entfernt und durch eine Prothese mit zwei metallischen Komponenten und einem dazwischenliegenden Polyethylen-Inlay ersetzt. Die Komponenten werden im Knochen verankert &mdash; die genaue Verfahrenswahl und das Prothesenmodell hängen von der individuellen Situation ab und werden vorab mit Ihnen besprochen.</p>
+    <p>Die Operation dauert in der Regel <strong>90&ndash;120 Minuten</strong>. Der Krankenhausaufenthalt umfasst <strong>mehrere Tage</strong>.</p>
+
+    <h3>Nachsorge und Heilungsverlauf</h3>
+    <ul>
+      <li><strong>Teilbelastung mit 15 kg</strong> über <strong>4 Wochen nach Abschwellung</strong> im Unterschenkel-Stiefel (Vacoped) oder Gips. Bei Begleiteingriffen (z.B. Korrektur einer Achsfehlstellung, Bandstabilisierung, Knochenaufbau) kann die Entlastungsphase auch länger ausfallen.</li>
+      <li><strong>Schrittweise Aufbelastung</strong> im Anschluss</li>
+      <li><strong>Vollbelastung</strong> in der Regel ab dem 3. Monat</li>
+      <li><strong>Beweglichkeit</strong> wird ab Beginn der Heilungsphase aktiv gefördert</li>
+      <li><strong>Physiotherapie</strong> zur Mobilisierung und Kräftigung der Wadenmuskulatur</li>
+      <li><strong>Thromboseprophylaxe</strong> während der Entlastungsphase</li>
+    </ul>
+
+    <h3>Mögliche Risiken</h3>
+    <p>Jede Operation birgt Risiken. Bei der OSG-Prothese sind insbesondere zu nennen:</p>
+    <ul>
+      <li><strong>Infektion</strong> (oberflächlich oder tiefe Gelenkinfektion) &mdash; bei der Prothese mit besonderer Tragweite, da eine tiefe Infektion oft den Komplettausbau der Prothese erfordert</li>
+      <li><strong>Wundheilungsstörungen</strong> &mdash; bei dünnen Weichteilen am Sprunggelenk relevant</li>
+      <li><strong>Thrombose / Lungenembolie</strong> während der Immobilisationsphase</li>
+      <li><strong>Nerven- und Gefäßverletzungen</strong> (selten)</li>
+      <li><strong>Lockerung der Prothesenkomponenten</strong> im Langzeitverlauf</li>
+      <li><strong>Verschleiß des Polyethylen-Inlays</strong> mit Notwendigkeit eines Inlay-Wechsels</li>
+      <li><strong>Sinterung</strong> (Einsinken der Prothese in den Knochen)</li>
+      <li><strong>Begrenzte Standzeit der Prothese</strong> &mdash; siehe Vergleichsseite</li>
+      <li><strong>Eingeschränkte Belastbarkeit</strong> (kein Impact-Sport)</li>
+      <li><strong>Materialprobleme</strong> an Schrauben oder Komponenten</li>
+    </ul>
+
+    <h3>Was Sie nach der OP erwarten können</h3>
+    <p>Die meisten Patientinnen und Patienten erleben nach abgeschlossener Heilung eine Beschwerdebesserung bei <strong>erhaltener Beweglichkeit des Sprunggelenks</strong>. Das Gangbild bleibt weitgehend natürlich, das Abrollverhalten ist nicht eingeschränkt. Spaziergänge, Radfahren, Schwimmen und moderate Sportarten sind in vielen Fällen ohne wesentliche Einschränkung möglich. Joggen auf hartem Untergrund und impact-belastete Sportarten werden meist nicht empfohlen, um die Prothese zu schonen und ihre Standzeit nicht zu reduzieren.</p>
+
+    <div class="info-box">
+      Wie sich die Prothese im Vergleich zur Versteifung unterscheidet und wie eine Entscheidung zwischen beiden Verfahren getroffen werden kann, wird auf der Vergleichsseite ausführlich dargestellt.
+    </div>
+
+    <div class="nav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="goNext()">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Seite 5: Abwägung Versteifung vs. Prothese (Platzhalter — Inhalt folgt) -->
+  <section class="slide" data-step="5">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M 32 8 L 32 56"/>
+      <path d="M 12 20 L 32 14 L 52 20"/>
+      <path d="M 12 20 L 8 36 Q 8 40, 12 40 L 16 40 Q 20 40, 20 36 Z"/>
+      <path d="M 52 20 L 48 36 Q 48 40, 52 40 L 56 40 Q 60 40, 60 36 Z"/>
+    </svg>
+    <h2>Abwägung: Versteifung oder Prothese?</h2>
+
+    <h3>Eine schwierige, aber gemeinsame Entscheidung</h3>
+    <p>Im klinischen Alltag ist die Entscheidung zwischen einer <strong>OSG-Arthrodese (=Versteifung)</strong> und einer <strong>OSG-Prothese</strong> häufig schwer. Die Indikation ist für beide Verfahren bei fortgeschrittener Arthrose oft die gleiche, und beide Verfahren können zu einem zufriedenstellenden Ergebnis führen. Welcher Weg für Sie individuell der richtige ist, hängt von einer ganzen Reihe von Faktoren ab &mdash; medizinischen, biomechanischen und persönlichen.</p>
+    <p>Diese Seite soll Ihnen helfen, die wichtigsten Unterschiede zu verstehen. Die endgültige Entscheidung treffen wir gemeinsam in einem ausführlichen Gespräch, in dem auch Ihre Lebenssituation und Ihre Erwartungen berücksichtigt werden.</p>
+
+    <h3>Was unterscheidet die beiden Verfahren grundsätzlich?</h3>
+    <p>Bei der <strong>Versteifung</strong> wird das Gelenk dauerhaft fixiert. Sie ist ein endgültiges Verfahren mit langer klinischer Erfahrung und liefert über Jahrzehnte zuverlässige Ergebnisse. Der Preis dafür ist der Verlust der Beweglichkeit im oberen Sprunggelenk &mdash; im Alltag häufig besser kompensiert als zunächst befürchtet, im Sport jedoch spürbar.</p>
+    <p>Bei der <strong>Prothese</strong> bleibt die Beweglichkeit erhalten. Das Gangbild ist natürlicher, das Abrollen weitgehend ungestört. Demgegenüber steht jedoch eine <strong>begrenzte Standzeit</strong> &mdash; künstliche Gelenke verschleißen, und nach einigen Jahren ist mit einer Lockerung oder einem Inlay-Wechsel zu rechnen. Eine Revision (=Folgeoperation mit Wechsel einer Prothesenkomponente) ist möglich, aber technisch anspruchsvoller als die Erstoperation.</p>
+
+    <h3>Anschlussarthrose und Standzeit &mdash; die zwei Hauptthemen</h3>
+    <p>Die <strong>Versteifung</strong> führt durch den Verlust der OSG-Beweglichkeit zu einer verstärkten Belastung der angrenzenden Gelenke (vor allem unteres Sprunggelenk und Mittelfußgelenke). Im Langzeitverlauf kann sich hier eine sogenannte <strong>Anschlussarthrose</strong> entwickeln. Dies betrifft nicht alle Patientinnen und Patienten gleichermaßen &mdash; viele leben über Jahrzehnte ohne nennenswerte Beschwerden in den Nachbargelenken.</p>
+    <p>Die <strong>Prothese</strong> vermeidet diese Anschlussarthrose, hat aber das Risiko der <strong>Komponentenlockerung</strong> und des <strong>Inlay-Verschleißes</strong>. Die Standzeit ist begrenzt, und eine spätere Revision ist meist anspruchsvoller.</p>
+    <p>Es ist also weniger die Frage „welches Verfahren ist besser?", sondern „welches Verfahren passt besser zu Ihrer Lebenssituation und welche Folge können Sie eher in Kauf nehmen?".</p>
+
+    <!-- Register-Box mit Konsensus-Zusammenfassung -->
+    <div class="info-box" style="border-left:4px solid #2C4F7C; margin:16px 0">
+      <strong>Was sagen die internationalen Register-Daten zur Standzeit?</strong><br><br>
+      Daten aus nationalen Endoprothesen-Registern in Großbritannien, Schweden, Norwegen, Neuseeland und Australien zeigen, dass nach 5 Jahren etwa <strong>85–90 %</strong> und nach 10 Jahren etwa <strong>75–85 %</strong> der modernen OSG-Prothesen noch im Patienten verbleiben. Die Spannweite ist groß und hängt vom Implantat, vom Operateur, vom Alter bei Operation und von der Definition einer „Revision" (=Folgeoperation mit Wechsel einer Prothesenkomponente) im jeweiligen Register ab.<br><br>
+      Diese Zahlen beziehen sich ausschließlich auf den Verbleib der Prothese und sagen nichts darüber aus, wie zufrieden Sie mit dem Ergebnis sein werden oder wie gut Sie funktionieren werden. Im Vergleich zu Hüft- und Knieprothesen, bei denen 10-Jahres-Überlebensraten von etwa 95 % erreicht werden, sind OSG-Prothesen weniger lang stabil. Allerdings hat sich die Standzeit der OSG-Prothesen über die letzten 15 Jahre nachweislich verbessert.<br><br>
+      <em>Wenn Sie detaillierte Informationen zu den einzelnen Registern und Quellenangaben wünschen, finden Sie diese in folgendem PDF:</em><br>
+      📄 <a href="osg_prothesen_standzeit.pdf" target="_blank" style="color:#2C4F7C; font-weight:600; text-decoration:underline">Standzeit von OSG-Prothesen — wissenschaftliche Übersicht (PDF)</a>
+    </div>
+
+    <h3>Wann tendiert die Entscheidung zur Versteifung?</h3>
+    <ul>
+      <li>Junges Alter, körperlich schwere Arbeit oder Sport mit Impact-Belastung</li>
+      <li>Ausgeprägte Achsfehlstellung oder Knochendefekt</li>
+      <li>Schlechte Weichteilverhältnisse oder Infektionen in der Vorgeschichte</li>
+      <li>Reduzierte Knochenqualität (z.B. Osteoporose)</li>
+    </ul>
+
+    <h3>Wann tendiert die Entscheidung zur Prothese?</h3>
+    <ul>
+      <li>Mittleres bis höheres Lebensalter mit moderaten Belastungsansprüchen</li>
+      <li>Achsgerechtes Sprunggelenk und gute Knochenqualität</li>
+      <li>Bereits versteifte Nachbargelenke</li>
+      <li>Hoher Stellenwert eines natürlichen Gangbilds</li>
+    </ul>
+
+    <h3>Vergleichstabelle</h3>
+    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch; margin:12px 0;">
+      <table style="width:100%; min-width:560px; border-collapse:collapse; font-size:13px; line-height:1.4">
+        <thead>
+          <tr style="background:#2C4F7C; color:white">
+            <th style="text-align:left; padding:8px 10px; border:1px solid #2C4F7C">Eigenschaft</th>
+            <th style="text-align:left; padding:8px 10px; border:1px solid #2C4F7C">Versteifung (Arthrodese)</th>
+            <th style="text-align:left; padding:8px 10px; border:1px solid #2C4F7C">Prothese (TEP)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Beweglichkeit OSG</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">aufgehoben</td><td style="padding:6px 10px; border:1px solid #cbd5e0">erhalten</td></tr>
+          <tr style="background:#f7fafa"><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Gangbild</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">verändert, Abrollverhalten reduziert</td><td style="padding:6px 10px; border:1px solid #cbd5e0">weitgehend natürlich</td></tr>
+          <tr><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Belastbarkeit</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">unbeschränkt nach Heilung</td><td style="padding:6px 10px; border:1px solid #cbd5e0">eingeschränkt, kein Impact-Sport</td></tr>
+          <tr style="background:#f7fafa"><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Standzeit</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">dauerhaft</td><td style="padding:6px 10px; border:1px solid #cbd5e0">begrenzt, siehe Register-Daten oben</td></tr>
+          <tr><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Revision / Folge-OP</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">selten erforderlich</td><td style="padding:6px 10px; border:1px solid #cbd5e0">absehbar (Inlay-Wechsel, Lockerung)</td></tr>
+          <tr style="background:#f7fafa"><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Anschlussarthrose Nachbargelenke</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">mögliches Langzeit-Risiko</td><td style="padding:6px 10px; border:1px solid #cbd5e0">weniger relevant</td></tr>
+          <tr><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Klinische Erfahrung</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">Jahrzehnte, sehr umfangreich</td><td style="padding:6px 10px; border:1px solid #cbd5e0">seit 20+ Jahren, zunehmend</td></tr>
+          <tr style="background:#f7fafa"><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Typische Patientengruppe</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">jünger, aktiver, schwer belastend</td><td style="padding:6px 10px; border:1px solid #cbd5e0">mittleres/höheres Alter, moderate Belastung</td></tr>
+          <tr><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Entlastung nach OP</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">15 kg Teilbelastung ca. 8 Wochen</td><td style="padding:6px 10px; border:1px solid #cbd5e0">15 kg Teilbelastung ca. 4 Wochen (länger bei Begleiteingriffen)</td></tr>
+          <tr style="background:#f7fafa"><td style="padding:6px 10px; border:1px solid #cbd5e0"><strong>Risiko bei tiefer Infektion</strong></td><td style="padding:6px 10px; border:1px solid #cbd5e0">schwerwiegend, aber meist mit Materialwechsel beherrschbar</td><td style="padding:6px 10px; border:1px solid #cbd5e0">gravierend, oft Prothesenausbau nötig</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box">
+      Diese Aufstellung ist eine Orientierung, keine starre Empfehlung. Beide Verfahren sind etabliert und können zu einem guten Ergebnis führen. Welches Verfahren in Ihrem individuellen Fall sinnvoller ist, besprechen wir gemeinsam &mdash; auf Basis Ihrer Lebensumstände, Ihrer Erwartungen und der medizinischen Befunde.
+    </div>
+
+    <div class="nav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="goNext()">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Seite 6: Abschluss mit Sichtungsbestätigung -->
+  <section class="slide slide-confirm" data-step="6">
+    <svg class="slide-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="32" cy="32" r="22"/>
+      <path d="M 22 32 L 30 40 L 44 24"/>
+    </svg>
+    <h2>Information abgeschlossen</h2>
+    <p>Sie haben alle Informationen zur OSG-Arthrose gesehen &mdash; einschließlich des Krankheitsbilds, der konservativen Behandlungsoptionen sowie der beiden operativen Verfahren (Versteifung und Prothese) mit ihren jeweiligen Risiken und der Abwägung dazwischen.</p>
+
+    <div class="info-box">
+      Mit dem folgenden Button bestätigen Sie, dass Sie das Online-Informationsmaterial vollständig angesehen haben. Anschließend wird ein <strong>Dokument zum Ausdrucken</strong> erstellt. Bitte drucken Sie es aus, füllen Sie die persönlichen Felder von Hand aus und unterschreiben Sie es. Bringen Sie das unterschriebene Dokument zum nächsten Termin in die Klinik mit.
+    </div>
+
+    <button class="btn-primary btn-large" id="confirmBtn" onclick="confirmAufklaerung()">Sichtung bestätigen</button>
+
+    <div class="confirm-status" id="confirmStatus">✓ Sichtung bestätigt</div>
+
+    <!-- Autoren-Kurzform-Box (Abschluss) -->
+    <div style="max-width:480px; margin:24px auto 8px; padding:14px 16px; background:white; border-left:3px solid #2C4F7C; border-radius:6px; box-shadow:0 2px 12px rgba(0,0,0,0.10); text-align:left; font-size:12.5px; line-height:1.5; color:#1A202C;">
+      <div style="font-size:10px; font-weight:600; color:#2C4F7C; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Inhalt und Bewertung</div>
+      <div><strong>Dr. med. Benjamin Breuer D.O. DAAO</strong></div>
+      <div>Spezialist für Fuß- und Sprunggelenkchirurgie</div>
+      <div style="color:#2D3748; font-size:12px; margin-top:4px; padding-top:4px; border-top:1px solid rgba(0,0,0,0.10);">Florence Nightingale Krankenhaus, Düsseldorf Kaiserswerth</div>
+    </div>
+
+    <!-- Druckdokument -->
+    <div class="print-doc" id="printDoc">
+      <div class="print-doc-header">
+        <h3>Bestätigung zur Sichtung des Informationsmaterials</h3>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Information</div>
+          <div class="filled">OSG-Arthrose &mdash; Krankheitsbild und Behandlungsoptionen</div>
+        </div>
+      </div>
+
+      <div class="timestamp" id="printTimestamp">Information gesichtet am: —</div>
+
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Vorname, Nachname</div>
+          <div class="field-line"></div>
+        </div>
+        <div class="field">
+          <div class="field-label">Geburtsdatum</div>
+          <div class="field-line"></div>
+        </div>
+      </div>
+
+      <p style="margin-top:14px;font-size:11.5px;line-height:1.5">
+        Hiermit bestätige ich, das Online-Informationsmaterial zur OSG-Arthrose und ihren Behandlungsoptionen vollständig angesehen zu haben.
+      </p>
+      <p style="font-size:11.5px;line-height:1.5">
+        Mir ist bekannt, dass dieses Online-Informationsmaterial der vorbereitenden Information dient und das ärztliche Aufklärungsgespräch &mdash; insbesondere zu einer ggf. geplanten Operation &mdash; <strong>nicht ersetzt</strong>. Das persönliche Aufklärungsgespräch werde ich mit dem Operateur durchführen / habe ich mit dem Operateur durchgeführt.
+      </p>
+
+      <div class="signature-block">
+        <div class="field-row">
+          <div class="field">
+            <div class="field-label">Ort</div>
+            <div class="field-line"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Datum</div>
+            <div class="field-line"></div>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:14px">
+          <div class="field" style="flex:1 1 100%">
+            <div class="field-label">Unterschrift Patient(in)</div>
+            <div class="field-line"></div>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:14px">
+          <div class="field">
+            <div class="field-label">Datum</div>
+            <div class="field-line"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Unterschrift Operateur(in)</div>
+            <div class="field-line"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer-print">
+        Diese Bestätigung dokumentiert die Sichtung des Online-Informationsmaterials. Das ärztliche Aufklärungsgespräch ist Pflichtbestandteil jeder Operation und unterliegt der Dokumentation in der Patientenakte.
+      </div>
+      <div class="source-footer-print">
+        Diese Information orientiert sich an der aktuellen wissenschaftlichen Literatur und den Daten internationaler Endoprothesen-Register (Stand 2024/2025). Detaillierte Quellenangaben siehe verlinktes PDF zur Standzeit von OSG-Prothesen.
+      </div>
+    </div>
+
+    <div class="nav" id="preConfirmNav">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+    </div>
+    <div class="nav" id="postConfirmNav" style="display:none">
+      <button class="btn-secondary" onclick="goPrev()">Zurück</button>
+      <button class="btn-primary" onclick="window.print()">Dokument drucken</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  var currentStep = 0;
+  var totalSteps = 7;
+
+  function showStep(step) {
+    var slides = document.querySelectorAll(".slide");
+    slides.forEach(function(s) { s.classList.remove("active"); });
+    var target = document.querySelector('.slide[data-step="' + step + '"]');
+    if (target) target.classList.add("active");
+
+    var dots = document.querySelectorAll("#progress .progress-dot");
+    dots.forEach(function(d, i) {
+      d.classList.remove("active", "done");
+      if (i < step) d.classList.add("done");
+      else if (i === step) d.classList.add("active");
+    });
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goNext() {
+    if (currentStep < totalSteps - 1) showStep(currentStep + 1);
+  }
+  function goPrev() {
+    if (currentStep > 0) showStep(currentStep - 1);
+  }
+
+  function confirmAufklaerung() {
+    var now = new Date();
+    var dd = String(now.getDate()).padStart(2, "0");
+    var mm = String(now.getMonth() + 1).padStart(2, "0");
+    var yyyy = now.getFullYear();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var min = String(now.getMinutes()).padStart(2, "0");
+    var stamp = dd + "." + mm + "." + yyyy + " um " + hh + ":" + min + " Uhr";
+
+    document.getElementById("printTimestamp").textContent = "Information gesichtet am: " + stamp;
+    document.getElementById("confirmStatus").classList.add("show");
+    document.getElementById("printDoc").classList.add("show");
+    document.getElementById("confirmBtn").style.display = "none";
+    document.getElementById("preConfirmNav").style.display = "none";
+    document.getElementById("postConfirmNav").style.display = "flex";
+
+    setTimeout(function() {
+      document.getElementById("printDoc").scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }
+
+  // Tastatur-Navigation (optional, hilft auf Desktop)
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowRight") goNext();
+    if (e.key === "ArrowLeft") goPrev();
+  });
+</script>
+</body>
+</html>
